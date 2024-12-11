@@ -19,7 +19,7 @@ depends=('bubblewrap'
 install=ace-bookworm-arch.install
 
 source=("ace-bookworm-arch-$pkgver.tar.gz::https://github.com/KafuuNagi/ace-bookworm-arch/archive/refs/tags/${pkgver}.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('f95b71e7a6b6ebb0fb1694496ec37774308166315255081c476841243bad645a')
 
 package() {
 	cp -rf ${srcdir}/ace-bookworm-arch-${pkgver}/src/opt ${pkgdir}/
