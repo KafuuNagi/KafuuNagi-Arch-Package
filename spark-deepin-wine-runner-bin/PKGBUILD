@@ -1,0 +1,26 @@
+# Maintainer: KafuuNagi <welcome-come-on@outlook.com>
+
+pkgname=spark-deepin-wine-runner-bin
+pkgver=4.1.2
+pkgrel=1
+pkgdesc="spark-deepin-wine-runner from spark-store"
+maintainer="KafuuNagi <welcome-come-on@outlook.com>"
+arch=('any')
+url="https://gitee.com/gfdgd-xi/deep-wine-runner"
+license=('GPL3')
+depends=('aria2' 'bubblewrap' 'curl' 'dbus-python' 'fakeroot' 'hicolor-icon-theme' 'p7zip' 'python' 'python-pillow' 'python-pip' 'python-psutil' 'python-pyperclip' 'python-pyqt5' 'python-pyquery' 'python-requests' 'sugar-activity-pippy' 'unrar' 'unrar-free' 'unzip' 'zenity')
+source=("https://mirrors.sdu.edu.cn/spark-store-repository/store/tools/spark-deepin-wine-runner/spark-deepin-wine-runner_${pkgver}_all.deb" ".INSTALL")
+conflicts=('spark-deepin-wine-runner')
+provides=('spark-deepin-wine-runner')
+sha256sums=('18a378c6a526d6272fea3e52c7258f0cc83ceff66e69b8a7176f6e6475e2d931' '345f5bdc7ea3fc61ba3a4eae1781b886a83f07f568f3aaa0e011a4f6adb9956f')
+
+package() {
+    # 使用 bsdtar 解压 .deb 文件
+    bsdtar -xvf "$srcdir/spark-deepin-wine-runner_${pkgver}_all.deb" -C "$srcdir"
+
+    # 解压其中的 data.tar.xz 到 $pkgdir
+    bsdtar -xvf "$srcdir/data.tar.xz" -C "$pkgdir"
+
+    # 移除不需要的 Debian 元数据文件
+    rm -rf "$pkgdir/DEBIAN"
+}
