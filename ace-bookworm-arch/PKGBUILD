@@ -1,0 +1,42 @@
+# Maintainer: KafuuNagi<welcome-come-on@outlook.com>
+pkgname=ace-bookworm-arch
+pkgver=12.4.14.2arch1
+pkgrel=1
+pkgdesc="a container app packaging and distributing solution."
+arch=('aarch64' 'x86_64' 'loong64')
+url="https://github.com/KafuuNagi/ace-bookworm-arch"
+license=('GPL3')
+conflicts=('amber-ce-bookworm')
+provides=('amber-ce-bookworm')
+depends=('bubblewrap'
+	'xdg-desktop-portal'
+	'flatpak'
+	'zenity'
+	'gcc'
+	'debootstrap'
+	'procps-ng')
+
+install=ace-bookworm-arch.install
+
+source=("ace-bookworm-arch-$pkgver.tar.gz::https://github.com/KafuuNagi/ace-bookworm-arch/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('SKIP')
+
+package() {
+	cp -rf ${srcdir}/ace-bookworm-arch-${pkgver}/src/opt ${pkgdir}/
+	cp -rf ${srcdir}/ace-bookworm-arch-${pkgver}/src/etc ${pkgdir}/
+	cp -rf ${srcdir}/ace-bookworm-arch-${pkgver}/src/usr ${pkgdir}/
+
+	cd "${pkgdir}/opt/apps/cn.flamescion.bookworm-compatibility-mode/files"
+	if [ "$CARCH" = "aarch64" ]
+	then
+		bash build-container.sh arm64
+	elif [ "$CARCH" = "x86_64" ]
+	then
+		bash build-container.sh amd64
+	elif [ "$CARCH" = "loong64" ]
+	then
+		bash build-container.sh loong64
+	else
+		echo "Unsupported arch!"
+	fi
+}
