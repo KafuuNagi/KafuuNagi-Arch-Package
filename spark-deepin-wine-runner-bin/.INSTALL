@@ -1,0 +1,99 @@
+post_install() {
+	function notify-send(){
+	 #Detect the user using such display
+	    local user=$(who | awk '{print $1}' | head -n 1)
+
+	    #Detect the id of the user
+	    local uid=$(id -u $user)
+	sudo -u $user DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus notify-send "$@"
+	}
+
+	function zenity(){
+	 #Detect the user using such display
+	    local user=$(who | awk '{print $1}' | head -n 1)
+
+	    #Detect the id of the user
+	    local uid=$(id -u $user)
+	sudo -u $user DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus zenity "$@"
+	}
+
+	### 判断 ACE 类型
+	if [[ `arch` == "loongarch64" ]]; then
+	    # loongarch 架构有多个 ACE，优先安装至旧世界的 ACE
+	    if [[ ! -z `which bookworm-run` ]]; then
+	        aceCommand="bookworm-run"
+	    fi
+	    if [[ ! -z `which loongnix-run` ]]; then
+	        aceCommand="loongnix-run"
+	    fi
+	    if [[ $aceCommand == "" ]]; then
+	        echo "Oh no, ssinstall have not installed bookworm-run dependency yet! Exit"
+	        exit 1
+	    fi
+	    echo "Installing Wine Runner to " $aceCommand
+	else
+	    ###检查aptss在不在
+	    if [ -z `which bookworm-run` ];then
+	        echo "Oh no, ssinstall have not installed bookworm-run dependency yet! Exit"
+	        exit 1
+	    fi
+	    aceCommand="bookworm-run"
+	fi
+
+	$aceCommand echo "Welcome to BCM! Trying to install package"
+	if [ -z "`$aceCommand which aptss`" ];then
+	wget https://zunyun01.store.deepinos.org.cn/store/depends/spark-store-console-in-container_4.2.6.2_all.deb -O /tmp/ssconsole.deb
+	rm /tmp/ssconsole.deb -f
+	fi
+	notify-send "Installing Wine Runner BCM, may cost some time please ensure your network is fine" 
+	notify-send "正在书虫兼容环境中安装 Wine 运行器，可能会花费一些时间，请保持网络畅通" 
+	$aceCommand aptss update
+	cp /opt/apps/spark-deepin-wine-runner-ace/spark-deepin-wine-runner.deb /tmp
+	$aceCommand aptss reinstall /tmp/spark-deepin-wine-runner.deb -y
+
+	$aceCommand aptss clean
+}
+
+post_upgrade() {
+	post_install
+}
+
+post_remove() {
+	# 使用系统默认的 sh 运行
+	#################################################################################################################
+	# 作者：gfdgd xi
+	# 版本：2.2.0
+	# 更新时间：2022年09月24日
+	# 感谢：感谢 wine、deepin-wine 以及星火团队，提供了 wine、deepin-wine、spark-wine-devel 给大家使用，让我能做这个程序
+	# 基于 sh
+	#################################################################################################################
+
+	if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
+		### 判断 ACE 类型
+		if [[ `arch` == "loongarch64" ]]; then
+	    	# loongarch 架构有多个 ACE，优先安装至旧世界的 ACE
+	    	if [[ ! -z `which bookworm-run` ]]; then
+	        	aceCommand="bookworm-run"
+	    	fi
+	    	if [[ ! -z `which loongnix-run` ]]; then
+	        	aceCommand="loongnix-run"
+	    	fi
+	    	if [[ $aceCommand == "" ]]; then
+	        	echo "Oh no, ssinstall have not installed bookworm-run dependency yet! Exit"
+	        	#exit 1
+	    	fi
+	    	echo "Removing Wine Runner to " $aceCommand
+		else
+		    ###检查aptss在不在
+	    	if [ -z `which bookworm-run` ];then
+	        	echo "Oh no, ssinstall have not installed bookworm-run dependency yet! Exit"
+	        	#exit 1
+	    	fi
+	    	aceCommand="bookworm-run"
+		fi
+		# 卸载应用
+
+	else
+		echo "非卸载，跳过清理"
+	fi
+}
