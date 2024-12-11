@@ -1,2 +1,4 @@
 # KafuuNagi-Arch-Package
 香风凪自己打的arch包
+但是实际上是在Manjaro上打出来的，archlinux慎用
+主要是修复了星火商店为archlinux打的一些移植包的问题
